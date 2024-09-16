@@ -15,7 +15,11 @@ maternal2 <- pivot_longer(maternal1,
 
 maternal2$Year <- as.numeric(maternal2$Year)
 
+usethis::use_git_config(user.name = "amcgror",
+                        user.email = "abigail.mcgrory@mail.utoronto.ca")
 
+# to confirm, generate a git situation-report, your user name and email should appear under Git config (global)
+usethis::git_sitrep()
 usethis::use_git_config()
 usethis::use_git() 
 usethis::use_github()
