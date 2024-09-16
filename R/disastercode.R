@@ -1,0 +1,17 @@
+library(here)
+library(dplyr)
+
+dis <- read.csv(here("original", "disaster.csv"))
+
+dis2 <- dis %>%
+  filter(Year %in% 2000:2019, 
+         Disaster.Type == "Earthquake"|
+           Disaster.Type =="Drought") %>%
+  select(Year, ISO, Disaster.Type)
+
+dis2$drought <- ifelse(dis2$Disaster.Type == "Drought",1,0)
+dis2$earthquake <- ifelse(dis2$Disaster.Type == "Earthquake",1,0) 
+
+dis3 <- dis2 %>%
+  group_by(ISO, Year) %>%
+  summarise(drought=sum(drought), earthquake = sum(earthquake))
