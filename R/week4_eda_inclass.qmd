@@ -10,6 +10,7 @@ format: pdf
 #| include: false
 source("../.Rprofile")
 library(here)
+library(ggplot2)
 ```
 
 
@@ -39,3 +40,85 @@ finaldata %>%
 ## Exploratory data analysis
 
 Use the rest of the class time to explore the final data that will be used for analysis starting next week. At the end of the class, write a summary of your findings and push your **Quarto document (pdf)** to your repo. 
+
+
+We will start the EDA by looking at the structure and summary of the variables in the dataset. This gives us a better idea of the type of data we are working with. We have 21 variables (mostly numeric) and 5320 observations. Our outcome variable MatMor has a wide spread with min = 2 and max = 2480 so that is something to keep in mind during our analysis. 
+```{r}
+str(finaldata)
+summary(finaldata)
+```
+Next we want to see how time effects maternal mortality by using a bar graph.
+
+```{r}
+
+df1 <- finaldata %>%
+  group_by(Year) %>%
+  summarise(death = sum(MatMor, na.rm = TRUE))
+
+ggplot(df1, aes(x = Year, y = death)) +
+  geom_bar(stat = "identity", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Number of Deaths per Year", x = "Year", y = "Number of Deaths") +
+  scale_x_continuous(breaks = seq(min(df1$Year), max(df1$Year), by = 1))
+```
+We can see that as time increases, global maternal mortality rates decrease. This could be due to improvements to medicine but we should look closer at the date before coming to any conclusions. We will look at maternal mortality rates by region next. 
+
+```{r}
+df2 <- finaldata %>%
+  group_by(region) %>%
+  summarise(death = sum(MatMor, na.rm = TRUE))
+
+ggplot(df2, aes(x = region, y = death)) +
+  geom_bar(stat = "identity", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Number of Deaths per Region", x = "Region", y = "Number of Deaths")+
+theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
+
+```
+
+We see here that Sub-Saharan Africa has much higher maternal mortality rates than any other region. We will take a closer look at these rates through the years to see if it follows the global trend. 
+
+```{r}
+df3 <- finaldata %>% 
+  filter(region == "Sub-Saharan Africa") %>%
+  group_by(Year) %>%
+  summarise(death = sum(MatMor, na.rm = TRUE))
+
+ggplot(df3, aes(x = Year, y = death)) +
+  geom_bar(stat = "identity", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Number of Deaths per Year", x = "Year", y = "Number of Deaths") +
+  scale_x_continuous(breaks = seq(min(df3$Year), max(df3$Year), by = 1))
+
+```
+We see that despite having extremely high maternal mortality, there is still a decrease in the rates as the time increases. This is consistent with global trends. 
+
+Now we look at the covariates we might want to include in the model. We start by creating a correlation plot to ensure we don't introduce too much multicollinearity in our exploratory regression. 
+```{r}
+df3 <- finaldata %>%
+  select(drought, earthquake, gdp1000, male_edu, popdens, urban)
+
+library(corrplot)
+cor_matrix <- cor(df3[, sapply(df3, is.numeric)], use = "complete.obs")
+
+# Step 2: Plot the correlation matrix
+corrplot(cor_matrix, method = "circle", type = "upper", 
+         tl.col = "black", tl.srt = 45, # Text label color and rotation
+         title = "Correlation Plot")
+
+
+
+
+```
+
+We see that popdens and urban are quite correlated with many other variables so we will exclude them from regression. 
+
+```{r}
+l.m <- lm(MatMor ~ drought + earthquake + male_edu + gdp1000, data = finaldata)
+
+
+summary(l.m)
+```
+
+This shows us that earthquake, gdp and male_edu have an impact on the outcome variable. Next steps in this EDA would involve looking at each of these covariates more in depth. 
