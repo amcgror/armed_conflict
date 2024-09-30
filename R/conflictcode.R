@@ -8,9 +8,10 @@ con.df <- con.df1 %>%
 
 
 con.df$conflict <- ifelse(con.df$best >= 25,1,0)
-con.df$best <- NULL
 con.df$year <- con.df$year+1
 
-con.df <- rename(con.df, Year = year)
+con.df$best[is.na(con.df$best)] <- 0
+
+con.df <- rename(con.df, Year = year, Totdeath  = best)
 
 return(con.df)

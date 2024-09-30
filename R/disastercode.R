@@ -22,4 +22,8 @@ dis3$ISO <- countrycode(dis3$Country.Name,
                             origin = "country.name",
                             destination = "iso3c")
 
+dis3$drought[is.na(dis3$drought)] <- 0
+dis3$earthquake[is.na(dis3$earthquake)] <- 0
+
+
 return(dis3)

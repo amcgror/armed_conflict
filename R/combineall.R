@@ -16,7 +16,9 @@ full_df00 <- left_join(full_df0, con.df, by=c("ISO", "Year"))
 
 full_df <- left_join(full_df00, covs, by=c("ISO", "Year"))
 
+
+
 table(full_df$ISO)
 
-write.csv(full_df,here("original", "conflict_primary_analysis.csv"))
+write.csv(full_df,here("original", "conflict_primary_analysis.csv"), row.names = FALSE)
 
