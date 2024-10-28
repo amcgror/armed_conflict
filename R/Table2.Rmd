@@ -1,0 +1,72 @@
+---
+title: "Table2"
+author: "Abigail McGrory"
+date: "2024-10-28"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+library(here)
+
+finaldata <- read.csv("C:/Users/Abigail McGrory/Documents/PhD/First Year/Special Topics/armed_conflict/original/conflict_primary_analysis.csv")
+
+finaldata <- finaldata[complete.cases(finaldata[ , 13]),]
+
+finaldata[is.na(finaldata)] <- 0
+
+
+
+```
+
+```{r, results='asis', echo=FALSE}
+
+library(plm)
+library(stargazer)
+library(tinytex)
+finaldata$gdp <- log(finaldata$gdp1000)
+
+matmod <- plm(MatMor ~ conflict + gdp1000 + OECD + popdens + urban + 
+                agedep + male_edu + temp + rainfall1000 + earthquake + drought,
+              index = c("ISO", "Year"),
+              effect = "twoways",
+              model = "within",
+              data = finaldata)
+
+un5mormod <- plm(UndMor ~ conflict + gdp1000 + OECD + popdens + urban + 
+                agedep + male_edu + temp + rainfall1000 + earthquake + drought,
+              index = c("ISO", "Year"),
+              effect = "twoways",
+              model = "within",
+              data = finaldata)
+
+infmormod <- plm(InfMor ~ conflict + gdp1000 + OECD + popdens + urban + 
+                agedep + male_edu + temp + rainfall1000 + earthquake + drought,
+              index = c("ISO", "Year"),
+              effect = "twoways",
+              model = "within",
+              data = finaldata)
+
+neomod <- plm(NeoMor ~ conflict + gdp1000 + OECD + popdens + urban + 
+                agedep + male_edu + temp + rainfall1000 + earthquake + drought,
+              index = c("ISO", "Year"),
+              effect = "twoways",
+              model = "within",
+              data = finaldata)
+
+mods <- list(matmod, un5mormod, infmormod, neomod)
+
+stargazer(mods, type = "latex",dep.var.labels.include = FALSE,
+          covariate.labels = c("Armed Conflict", "logGDP",
+          "OECD", "Population Density", "Urban",
+          "Age Dependency", "Male Education",
+          "Average Temperature", "Earthquake",
+          "Drought"), dep.var.labels = c("Maternal Mortality",
+          "Under 5 Mortality", "Infant Mortality", 
+          "Neonatal Mortality"), out = "matmormod.tex")
+
+
+```
