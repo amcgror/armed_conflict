@@ -1,9 +1,9 @@
 library(dplyr)
 library(here)
-covs <- read.csv(here("original", "covariates.csv"))
+covs <- read.csv("C:/Users/Abigail McGrory/Documents/PhD/First Year/Special Topics/armed_conflict/original/covariates.csv")
 covs <- rename(covs, Year = year)
 
-source(here("R", "mortalitycode.R"))
+source("C:/Users/Abigail McGrory/Documents/PhD/First Year/Special Topics/armed_conflict/R/mortalitycode.R")
 source(here("R", "conflictcode.R"))
 source(here("R", "disastercode.R"))
 
