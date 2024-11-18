@@ -19,7 +19,7 @@ getmeddiff <- function(data, indices) {
 }
 
 boot.inf <- boot(data.2017, statistic = getmeddiff, strata = data.2017$conflict, R = 1000)
-boot.inf
+boot.ci((boot.inf))
 
 ###Under5 mortality 
 
@@ -31,7 +31,7 @@ getmeddiff <- function(data, indices) {
 }
 
 boot.und <- boot(data.2017, statistic = getmeddiff, strata = data.2017$conflict, R = 1000)
-boot.und
+boot.ci(boot.und)
 
 ###Neonatal mortality 
 
@@ -43,4 +43,4 @@ getmeddiff <- function(data, indices) {
 }
 
 boot.neo <- boot(data.2017, statistic = getmeddiff, strata = data.2017$conflict, R = 1000)
-boot.neo
+boot.ci(boot.und)
